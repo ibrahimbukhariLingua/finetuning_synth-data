@@ -24,49 +24,37 @@ module load nccl
 conda activate ft-synth
 
 python3 train.py \
-  --ft_data_dir data/training/synth_wiki_finance_v2.2 \
+  --ft_data_dir data/finetuning_datasets/cite_think_v2.2 \
   --model_name qwen/qwen2.5-7B-instruct \
   --ft_model_name qwen2.5-7B_lora_cite_think_data-v2.2 \
-  --num_of_samples 1000 \
-  --ft_w_lora \
-  --add_cite \
-  --add_think
+  --ft_w_lora 
 
 python3 train.py \
-  --ft_data_dir data/training/synth_wiki_finance_v2.2 \
+  --ft_data_dir data/finetuning_datasets/cite_v2.2 \
   --model_name qwen/qwen2.5-7B-instruct \
   --ft_model_name qwen2.5-7B_lora_cite_data-v2.2 \
-  --num_of_samples 1000 \
-  --ft_w_lora \
-  --add_cite 
+  --ft_w_lora 
 
 python3 train.py \
-  --ft_data_dir data/training/synth_wiki_finance_v2.2 \
+  --ft_data_dir data/finetuning_datasets/cite_think_v2.2 \
   --model_name qwen/qwen2.5-7B-instruct \
-  --ft_model_name qwen2.5-7B_fft_cite_think_data-v2.2 \
-  --num_of_samples 1000 \
-  --add_cite \
-  --add_think 
+  --ft_model_name qwen2.5-7B_fft_cite_think_data-v2.2 
+
 
 python3 train.py \
-  --ft_data_dir data/training/synth_wiki_finance_v2.2 \
+  --ft_data_dir data/finetuning_datasets/cite_v2.2 \
   --model_name qwen/qwen2.5-7B-instruct \
-  --ft_model_name qwen2.5-7B_fft_cite_data-v2.2 \
-  --num_of_samples 1000 \
-  --add_cite
+  --ft_model_name qwen2.5-7B_fft_cite_data-v2.2 
+
 
 python3 train.py \
-  --ft_data_dir data/training/synth_wiki_finance_v2.2 \
+  --ft_data_dir data/finetuning_datasets/think_v2.2 \
   --model_name qwen/qwen2.5-7B-instruct \
-  --ft_model_name qwen2.5-7B_fft_think_data-v2.2 \
-  --num_of_samples 1000 \
-  --add_think
+  --ft_model_name qwen2.5-7B_fft_think_data-v2.2
+
 
 python3 train.py \
-  --ft_data_dir data/training/synth_wiki_finance_v2.2 \
+  --ft_data_dir data/finetuning_datasets/think_v2.2 \
   --model_name qwen/qwen2.5-7B-instruct \
-  --ft_model_name qwen2.5-7B_fft_think_data-v2.2 \
-  --num_of_samples 1000 \
-  --ft_w_lora \
-  --add_think
-
+  --ft_model_name qwen2.5-7B_lora_think_data-v2.2 \
+  --ft_w_lora 
