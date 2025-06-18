@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --account=xov@h100
 #SBATCH --job-name synthetic_data_finetuning
-#SBATCH --partition=gpu_p5
+#SBATCH --partition=gpu_p6
 #SBATCH -C h100
 #SBATCH --ntasks-per-node=1
 #SBATCH --gres=gpu:1
@@ -23,6 +23,8 @@ module load nccl
 
 conda activate ft-synth
 
+HF_HUB_OFFLINE 1
+
 python3 train.py \
   --ft_data_dir data/training/synth_wiki_finance_v2.2 \
   --model_name qwen/qwen2.5-0.5B-instruct \
@@ -31,5 +33,3 @@ python3 train.py \
   --ft_w_lora \
   --add_cite \
   --add_think
-
-

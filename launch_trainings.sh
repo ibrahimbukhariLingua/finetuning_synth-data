@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --account=xov@a100
+#SBATCH --account=xov@h100
 #SBATCH --job-name synthetic_data_finetuning
-#SBATCH --partition=gpu_p5
+#SBATCH --partition=gpu_p6
 #SBATCH -C h100
 #SBATCH --ntasks-per-node=1
 #SBATCH --gres=gpu:1

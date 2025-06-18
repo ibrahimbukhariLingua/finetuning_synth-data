@@ -8,8 +8,8 @@ from tabulate import tabulate
 from peft import LoraConfig
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from trl import SFTConfig, SFTTrainer, DataCollatorForCompletionOnlyLM
-from huggingface_hub.hf_api import HfFolder
-HfFolder.save_token("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")
+# from huggingface_hub.hf_api import HfFolder
+# HfFolder.save_token("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")
 
 from util import Data_to_hf
 
@@ -185,8 +185,6 @@ class Finetune_w_checkpoint():
         self.printTrainer(trainer, self.tokenizer)
         
         trainer.train()
-        trainer.push_to_hub(f"ibrahimbukhariLingua/{self.ft_model_name}")
-
 
 
 
