@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --account=xov@a100
+#SBATCH --account=xov@h100
 #SBATCH --job-name synthetic_data_finetuning
 #SBATCH --partition=gpu_p5
 #SBATCH -C h100
