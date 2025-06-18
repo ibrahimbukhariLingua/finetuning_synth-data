@@ -286,7 +286,7 @@ class Data_to_hf():
 
     # -------- Main Function ----------- #
 
-    def run(self) -> Dataset:
+    def run(self, save_dir) -> Dataset:
         all_qa_pairs = []
         
         # Function to extract QA pairs from a JSON file
@@ -322,5 +322,8 @@ class Data_to_hf():
         hf_dataset = Dataset.from_list(all_qa_pairs)
         hf_dataset = hf_dataset.map(lambda x: self.preprocess_example(x), remove_columns=hf_dataset.column_names)
         hf_dataset = hf_dataset.map(self.apply_template, remove_columns=hf_dataset.column_names)
+        
+        # Step 6: Save HF Dataset to directory
+        hf_dataset.save_to_disk(save_dir)
         
         return hf_dataset

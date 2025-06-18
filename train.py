@@ -8,8 +8,7 @@ from tabulate import tabulate
 from peft import LoraConfig
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from trl import SFTConfig, SFTTrainer, DataCollatorForCompletionOnlyLM
-# from huggingface_hub.hf_api import HfFolder
-# HfFolder.save_token("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")
+from datasets import load_from_disk
 
 from util import Data_to_hf
 
@@ -24,9 +23,6 @@ class Finetune_w_checkpoint():
         # Extract parameters from kwargs
         ft_data_dir = kwargs.get("ft_data_dir")
         model_name = kwargs.get("model_name")
-        num_of_samples = kwargs.get("num_of_samples", 1000)
-        add_think = kwargs.get("add_think")
-        add_cite = kwargs.get("add_cite")
         self.ft_model_name = kwargs.get("ft_model_name")
 
         # Parameter Check
@@ -41,12 +37,15 @@ class Finetune_w_checkpoint():
             attn_implementation="flash_attention_2",
         )
         self.model.config.use_cache = False
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side="left")
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            model_name, 
+            padding_side="left",
+            local_files_only=True,
+            trust_remote_code=True
+            )
 
-        # Initialize Object of Data_to_hf class
-        # Run the object to get hf_dataset for finetuning
-        data_to_hf = Data_to_hf(directory_path=ft_data_dir, num_of_samples=num_of_samples, add_cite=add_cite, add_think=add_think)
-        self.dataset = data_to_hf.run()
+        # Load finetune scripts from the directory
+        self.dataset = load_from_disk(ft_data_dir)
         
         # Get the Maximum Sequence Length from dataset
         self.max_seq_length = self.get_max_seq_length_from_chat_dataset(self.dataset, self.tokenizer)
@@ -190,15 +189,34 @@ class Finetune_w_checkpoint():
 
 
 if __name__ == "__main__":
+    
+    # # Processing the datasets beforehand
+    # data_to_hf = Data_to_hf(directory_path="data/training/synth_wiki_finance_v2.2", 
+    #                         num_of_samples=1000, 
+    #                         add_cite=True, 
+    #                         add_think=True)
+    # dataset = data_to_hf.run(save_dir="data/finetuning_datasets/cite_think_v2.2")
+    
+    # # Processing the datasets before hand
+    # data_to_hf = Data_to_hf(directory_path="data/training/synth_wiki_finance_v2.2", 
+    #                         num_of_samples=1000, 
+    #                         add_cite=False, 
+    #                         add_think=True)
+    # dataset = data_to_hf.run(save_dir="data/finetuning_datasets/think_v2.2")
+    
+    # # Processing the datasets before hand
+    # data_to_hf = Data_to_hf(directory_path="data/training/synth_wiki_finance_v2.2", 
+    #                         num_of_samples=1000, 
+    #                         add_cite=True, 
+    #                         add_think=False)
+    # dataset = data_to_hf.run(save_dir="data/finetuning_datasets/cite_v2.2")
+    
     parser = argparse.ArgumentParser(description="Fine-tune a model with checkpoint support.")
 
     parser.add_argument('--ft_data_dir', type=str, required=True, help='Path to the fine-tuning data directory.')
     parser.add_argument('--model_name', type=str, required=True, help='Base model name to fine-tune.')
     parser.add_argument('--ft_model_name', type=str, required=True, help='Name to assign to the fine-tuned model.')
-    parser.add_argument('--num_of_samples', type=int, required=True, help='Number of samples to use for fine-tuning.')
     parser.add_argument('--ft_w_lora', action='store_true', help='Whether to fine-tune with LoRA.')
-    parser.add_argument('--add_think', action='store_true', help='Add Reasoning when formatting')
-    parser.add_argument('--add_cite', action='store_true', help='Add Citation when formatting')
 
     args = parser.parse_args()
 
@@ -206,9 +224,6 @@ if __name__ == "__main__":
         'ft_data_dir': args.ft_data_dir,
         'model_name': args.model_name,
         'ft_model_name': args.ft_model_name,
-        'num_of_samples': args.num_of_samples,
-        'add_cite': args.add_cite,
-        'add_think': args.add_think
     }
 
     ft_trainer = Finetune_w_checkpoint(**kwargs)

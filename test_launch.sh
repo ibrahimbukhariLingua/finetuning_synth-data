@@ -24,10 +24,7 @@ module load nccl
 conda activate ft-synth
 
 python3 train.py \
-  --ft_data_dir data/training/synth_wiki_finance_v2.2 \
+  --ft_data_dir data/finetuning_datasets/cite_think_v2.2 \
   --model_name qwen/qwen2.5-0.5B-instruct \
   --ft_model_name test_launch \
-  --num_of_samples 1000 \
   --ft_w_lora \
-  --add_cite \
-  --add_think
