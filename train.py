@@ -183,10 +183,8 @@ class Finetune_w_checkpoint():
         self.printTrainer(trainer, self.tokenizer)
         
         trainer.train()
+        trainer.push_to_hub(f"ibrahimbukhariLingua/{self.ft_model_name}")
 
-        # trainer.push_to_hub(f"ibrahimbukhariLingua/{self.ft_model_name}")
-
-        # return f"ibrahimbukhariLingua/{self.ft_model_name}"
 
 
 
