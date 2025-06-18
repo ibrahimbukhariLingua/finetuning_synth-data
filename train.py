@@ -1,5 +1,5 @@
-import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+# import os
+# os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 import argparse
 import numpy as np
 from tqdm import tqdm
@@ -37,7 +37,7 @@ class Finetune_w_checkpoint():
         self.model = AutoModelForCausalLM.from_pretrained(
             model_name,
             torch_dtype=torch.bfloat16,
-            device_map="cuda",
+            device_map="auto",
             attn_implementation="flash_attention_2",
         )
         self.model.config.use_cache = False

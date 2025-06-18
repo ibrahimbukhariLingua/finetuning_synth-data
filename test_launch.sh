@@ -23,8 +23,6 @@ module load nccl
 
 conda activate ft-synth
 
-HF_HUB_OFFLINE 1
-
 python3 train.py \
   --ft_data_dir data/training/synth_wiki_finance_v2.2 \
   --model_name qwen/qwen2.5-0.5B-instruct \
