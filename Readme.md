@@ -19,7 +19,7 @@ Make sure you have your training script and the `Finetune_w_checkpoint` class av
 ### Example 1: Standard Fine-Tuning
 
 ```bash
-python train.py \
+python3 train.py \
   --ft_data_dir data/training/synth_wiki_finance_v2.2 \
   --model_name qwen/qwen2.5-0.5B-instruct \
   --ft_model_name my_finetuned_model \
@@ -29,7 +29,7 @@ python train.py \
 ### Example 2: Fine-Tuning with LoRA
 
 ```bash
-python train.py \
+python3 train.py \
   --ft_data_dir data/training/synth_wiki_finance_v2.2 \
   --model_name qwen/qwen2.5-0.5B-instruct \
   --ft_model_name my_finetuned_model_lora \

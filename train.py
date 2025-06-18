@@ -25,6 +25,8 @@ class Finetune_w_checkpoint():
         ft_data_dir = kwargs.get("ft_data_dir")
         model_name = kwargs.get("model_name")
         num_of_samples = kwargs.get("num_of_samples", 1000)
+        add_think = kwargs.get("add_think")
+        add_cite = kwargs.get("add_cite")
         self.ft_model_name = kwargs.get("ft_model_name")
 
         # Parameter Check
@@ -43,7 +45,7 @@ class Finetune_w_checkpoint():
 
         # Initialize Object of Data_to_hf class
         # Run the object to get hf_dataset for finetuning
-        data_to_hf = Data_to_hf(directory_path=ft_data_dir, num_of_samples=num_of_samples)
+        data_to_hf = Data_to_hf(directory_path=ft_data_dir, num_of_samples=num_of_samples, add_cite=add_cite, add_think=add_think)
         self.dataset = data_to_hf.run()
         
         # Get the Maximum Sequence Length from dataset
@@ -197,6 +199,8 @@ if __name__ == "__main__":
     parser.add_argument('--ft_model_name', type=str, required=True, help='Name to assign to the fine-tuned model.')
     parser.add_argument('--num_of_samples', type=int, required=True, help='Number of samples to use for fine-tuning.')
     parser.add_argument('--ft_w_lora', action='store_true', help='Whether to fine-tune with LoRA.')
+    parser.add_argument('--add_think', action='store_true', help='Add Reasoning when formatting')
+    parser.add_argument('--add_cite', action='store_true', help='Add Citation when formatting')
 
     args = parser.parse_args()
 
@@ -205,20 +209,9 @@ if __name__ == "__main__":
         'model_name': args.model_name,
         'ft_model_name': args.ft_model_name,
         'num_of_samples': args.num_of_samples,
+        'add_cite': args.add_cite,
+        'add_think': args.add_think
     }
 
     ft_trainer = Finetune_w_checkpoint(**kwargs)
     ft_trainer.run(ft_w_lora=args.ft_w_lora)
-    
-    
-    """
-    
-    python3 your_script.py \
-    --ft_data_dir data/training/synth_wiki_finance_v2.2 \
-    --model_name qwen/qwen2.5-0.5B-instruct \
-    --ft_model_name testing_new_ft_code \
-    --num_of_samples 1000 \
-    --ft_w_lora
-
-    """
-

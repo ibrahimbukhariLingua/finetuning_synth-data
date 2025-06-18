@@ -138,16 +138,18 @@ class RAGFormatter:
 # ========================== CLASS CONVERTING DATA TO HF ========================== #
 class Data_to_hf():
 
-    def __init__(self, directory_path:str, num_of_samples:int, rag_format_dir:str = "/data/home/syed.bukhari/finetuning_synth_data/data/rag_format/en-wikipedia-finance.txt"):
+    def __init__(self, directory_path:str, num_of_samples:int, add_think:bool, add_cite:bool,  rag_format_dir:str = "/data/home/syed.bukhari/finetuning_synth_data/data/rag_format/en-wikipedia-finance.txt"):
         self.directory_path = directory_path
         self.num_of_samples = num_of_samples
+        self.add_think = add_think
+        self.add_cite = add_cite
         
         # Initialize RAG formatter: simulates a RAG pipeline to add chunks to the prompt template
         self.formatter = RAGFormatter(directory=rag_format_dir)
 
     # -------- Helper Functions -------- #
     
-    def transform_input(self, text):
+    def transform_input(self, text, ):
         
         def compress_citations(citations):
             matches = re.findall(r'\[P(\d+)\|S(\d+)\]', citations)
@@ -192,15 +194,13 @@ class Data_to_hf():
                 while j < len(processed) and processed[j][1] == citation:
                     content += " " + processed[j][0]
                     j += 1
-                if citation:
-                    merged_statements.append(f"<statement>{content}<cite>{citation}</cite></statement>")
+                if citation and self.add_cite==True:
+                    merged_statements.append(f"{content}<cite>{citation}</cite>")
                 else:
                     merged_statements.append(content)
                 i = j
             return merged_statements
 
-        def remove_statement_tags(text):
-            return re.sub(r'</?statement>', '', text)
 
         # === Pipeline ===
 
@@ -212,9 +212,6 @@ class Data_to_hf():
 
         # Step 3: Merge consecutive statements with same citations (optional)
         output = merge_statements(statements)
-
-        # Step 4: Remove statement tags (optional)
-        output = [remove_statement_tags(stmt) for stmt in output]
 
         return ''.join(output)
 
@@ -273,8 +270,10 @@ class Data_to_hf():
         )
 
         # ---------------------------------------- Assistant Completion ----------------------------------------
-        completion = f"<think>{example['thinking']}</think>\n{example['answer']}"
-        # completion = example['answer']
+        if self.add_think == True:
+            completion = f"<think>{example['thinking']}</think>\n{example['answer']}"
+        else:
+            completion = example['answer']
 
         # ---------------------------------------- Message Format ----------------------------------------
         messages = [
