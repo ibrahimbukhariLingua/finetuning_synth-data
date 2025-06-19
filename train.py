@@ -9,6 +9,7 @@ from peft import LoraConfig
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from trl import SFTConfig, SFTTrainer, DataCollatorForCompletionOnlyLM
 from datasets import load_from_disk
+from accelerate import PartialState # Added Code ---------------
 
 from util import Data_to_hf
 
@@ -30,19 +31,14 @@ class Finetune_w_checkpoint():
             raise ValueError("Missing required parameters: 'ft_data_dir', 'model_name', or 'ft_model_name'.")
 
         # Initialize Model and Tokenizer
+        device_string = PartialState().process_index # Added Code -----------------
         self.model = AutoModelForCausalLM.from_pretrained(
             model_name,
             torch_dtype=torch.bfloat16,
-            device_map="auto",
+            device_map={"":device_string}, # Modified Code -------------------
             attn_implementation="flash_attention_2",
         )
-        self.model.config.use_cache = False
-        self.tokenizer = AutoTokenizer.from_pretrained(
-            model_name, 
-            padding_side="left",
-            local_files_only=True,
-            trust_remote_code=True
-            )
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side="left")
 
         # Load finetune scripts from the directory
         self.dataset = load_from_disk(ft_data_dir)
@@ -88,7 +84,7 @@ class Finetune_w_checkpoint():
             print(decoded)
             break
 
-    def get_max_seq_length_from_chat_dataset(self, dataset, tokenizer, instruction_template="<|im_start|>user\n", response_template="<|im_start|>assistant\n", percentile=97, verbose=True):    
+    def get_max_seq_length_from_chat_dataset(self, dataset, tokenizer, instruction_template="<|im_start|>user\n", response_template="<|im_start|>assistant\n", percentile=98, verbose=True):    
         input_lengths = []
         for example in tqdm(dataset, desc="Tokenizing chat examples"):
             messages = example["messages"]
@@ -216,7 +212,7 @@ if __name__ == "__main__":
     parser.add_argument('--ft_data_dir', type=str, required=True, help='Path to the fine-tuning data directory.')
     parser.add_argument('--model_name', type=str, required=True, help='Base model name to fine-tune.')
     parser.add_argument('--ft_model_name', type=str, required=True, help='Name to assign to the fine-tuned model.')
-    parser.add_argument('--ft_w_lora', action='store_true', help='Whether to fine-tune with LoRA.')
+    parser.add_argument('--ft_w_lora', type=bool, required=True, help='Whether to fine-tune with LoRA.')
 
     args = parser.parse_args()
 

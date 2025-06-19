@@ -4,8 +4,8 @@
 #SBATCH --partition=gpu_p6
 #SBATCH -C h100
 #SBATCH --ntasks-per-node=1
-#SBATCH --gres=gpu:1
-#SBATCH --cpus-per-task=32
+#SBATCH --gres=gpu:2
+#SBATCH --cpus-per-task=24
 #SBATCH --time=10:00:00
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=syed.bukhari@linguacustodia.com
@@ -23,8 +23,10 @@ module load nccl
 
 conda activate ft-synth
 
-python3 train.py \
-  --ft_data_dir data/finetuning_datasets/cite_think_v2.2 \
-  --model_name qwen/qwen2.5-0.5B-instruct \
-  --ft_model_name test_launch \
-  --ft_w_lora \
+export TRANSFORMERS_OFFLINE="1"
+export HF_DATASETS_OFFLINE="1"
+
+accelerate launch --config_file accelerate_config/fsdp2.yaml train.py \
+--ft_data_dir data/finetuning_datasets/cite_think_v2.2 \
+--model_name Qwen/Qwen2.5-7B-Instruct \
+--ft_model_name test_launch
