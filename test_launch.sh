@@ -30,3 +30,4 @@ accelerate launch --config_file accelerate_config/fsdp2.yaml train.py \
 --ft_data_dir data/finetuning_datasets/cite_think_v2.2 \
 --model_name Qwen/Qwen2.5-7B-Instruct \
 --ft_model_name test_launch
+--ft_w_lora False
